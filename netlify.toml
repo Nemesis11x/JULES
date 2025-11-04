@@ -1,0 +1,261 @@
+# ================================================================
+# Alter Agency - Configuration Netlify Enterprise Premium
+# Version: 2.0
+# Last Updated: June 2025
+# ================================================================
+
+[build]
+  publish = "."
+  command = "echo 'No build command'"
+
+# === REDIRECTS ===
+[[redirects]]
+  from = "http://alteragency.studio/*"
+  to = "https://alteragency.studio/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.alteragency.studio/*"
+  to = "https://alteragency.studio/:splat"
+  status = 301
+  force = true
+
+# === HEADERS GLOBAUX ===
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Security Headers
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    Permissions-Policy = "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), interest-cohort=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.google-analytics.com https://static.hotjar.com https://connect.facebook.net https://www.clarity.ms https://snap.licdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://api.emailjs.com https://www.google-analytics.com https://prod.spline.design wss://prod.spline.design https://px.ads.linkedin.com; frame-src 'self' https://vars.hotjar.com; media-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self' https://api.emailjs.com; manifest-src 'self';"
+
+# === CACHE HEADERS FOR ASSETS ===
+# CSS Files
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# JavaScript Files
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Images
+[[headers]]
+  for = "/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.jpeg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.gif"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.ico"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+# Fonts
+[[headers]]
+  for = "/*.woff"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.ttf"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.eot"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.otf"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+# Media Files
+[[headers]]
+  for = "/*.mp4"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.webm"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+# Documents
+[[headers]]
+  for = "/*.pdf"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# HTML - No cache
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
+    Clear-Site-Data = "\"cache\", \"storage\", \"executionContexts\""
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
+    Clear-Site-Data = "\"cache\", \"storage\", \"executionContexts\""
+
+# JSON/Data - No cache
+[[headers]]
+  for = "/*.json"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# Manifest
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Content-Type = "application/manifest+json"
+
+# Explicitly retire Service Workers
+[[redirects]]
+  from = "/sw.js"
+  to = "/"
+  status = 410
+  force = true
+
+[[redirects]]
+  from = "/service-worker.js"
+  to = "/"
+  status = 410
+  force = true
+
+# Formation cache tuning
+[[headers]]
+  for = "/formation/style.min.css"
+  [headers.values]
+    Cache-Control = "public, max-age=300, must-revalidate"
+
+[[headers]]
+  for = "/formation/script.js"
+  [headers.values]
+    Cache-Control = "public, max-age=300, must-revalidate"
+
+# Formation CSS filename versioning (rewrite)
+
+# === SPA FALLBACK REMOVED: site is multi-page; serve files from filesystem ===
+
+# === ENVIRONMENT VARIABLES ===
+[context.production.environment]
+  NODE_ENV = "production"
+
+[context.deploy-preview.environment]
+  NODE_ENV = "development"
+
+[context.branch-deploy.environment]
+  NODE_ENV = "development"
+
+# === PROCESSING SETTINGS ===
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = false
+  minify = true
+
+[build.processing.js]
+  bundle = false
+  minify = true
+
+[build.processing.html]
+  pretty_urls = true
+
+[build.processing.images]
+  compress = true
+
+# === PLUGINS ===
+[[plugins]]
+  package = "netlify-plugin-minify-html"
+  [plugins.inputs]
+    contexts = ["production", "branch-deploy", "deploy-preview"]
+    [plugins.inputs.minifierOptions]
+      removeComments = true
+      collapseWhitespace = true
+      collapseBooleanAttributes = true
+      removeAttributeQuotes = true
+      removeRedundantAttributes = true
+      removeEmptyAttributes = true
+      minifyJS = true
+      minifyCSS = true
+
+[[plugins]]
+  package = "netlify-plugin-submit-sitemap"
+  [plugins.inputs]
+    baseUrl = "https://alteragency.studio"
+    sitemapPath = "/sitemap.xml"
+    providers = ["google", "bing"]
+
+# === FUNCTIONS (si utilisées) ===
+[functions]
+  directory = "functions"
+  node_bundler = "esbuild"
+
+# === DEV SETTINGS ===
+[dev]
+  command = "npm run dev"
+  port = 3000
+  targetPort = 5173
+  autoLaunch = true

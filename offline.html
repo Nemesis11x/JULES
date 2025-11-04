@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hors ligne - Alter Agency</title>
+  <meta name="description" content="Vous êtes hors ligne — Alter Agency reste accessible avec ses informations clés même sans connexion.">
+  <link rel="canonical" href="https://alteragency.studio/offline">
+  <link rel="icon" href="/assets/favicon.png" type="image/png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Sora", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #000;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      text-rendering: optimizeLegibility;
+    }
+
+    .offline-container {
+      text-align: center;
+      padding: 2rem;
+      max-width: 600px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .offline-icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 2rem;
+      position: relative;
+    }
+
+    .offline-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #00d4d4, #0099cc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    p {
+      font-size: 1.125rem;
+      color: #999;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.875rem 2rem;
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn svg {
+      flex-shrink: 0;
+    }
+
+    .btn-primary {
+      background: linear-gradient(45deg, #00d4d4, #0099cc);
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0, 212, 212, 0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .cached-pages {
+      margin-top: 3rem;
+      padding-top: 3rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .cached-pages h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      color: #00d4d4;
+    }
+
+    .cached-pages ul {
+      list-style: none;
+      display: grid;
+      gap: 0.5rem;
+      padding: 0;
+    }
+
+    .cached-pages a {
+      color: #999;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      display: block;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .cached-pages a:hover {
+      background: rgba(0, 212, 212, 0.1);
+      color: #00d4d4;
+      transform: translateX(5px);
+    }
+
+    .bg-animation {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      opacity: 0.5;
+    }
+
+    .bg-animation::before,
+    .bg-animation::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+    }
+
+    .bg-animation::before {
+      width: 400px;
+      height: 400px;
+      background: #00d4d4;
+      top: -200px;
+      right: -200px;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    .bg-animation::after {
+      width: 300px;
+      height: 300px;
+      background: #0099cc;
+      bottom: -150px;
+      left: -150px;
+      animation: float 15s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      33% {
+        transform: translate(30px, -30px) scale(1.1);
+      }
+
+      66% {
+        transform: translate(-20px, 20px) scale(0.9);
+      }
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .offline-icon {
+        width: 80px;
+        height: 80px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-animation" aria-hidden="true"></div>
+  <main class="offline-container">
+    <div class="offline-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#00D4D4" />
+        <path d="M3.27 4L2 5.27l2.47 2.47C3.22 8.84 2.45 10.37 2.11 12h2.05c.33-1.2.89-2.28 1.64-3.19L8.64 11.65c-.01.12-.01.23-.01.35 0 1.68 1.02 3.12 2.47 3.74l1.65 1.65C12.51 17.46 12.26 17.5 12 17.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 10.5 12 10.5c.12 0 .23 0 .35.01l1.99 1.99c.62 1.45 2.06 2.47 3.74 2.47.12 0 .23 0 .35-.01l3.3 3.3L23 17l-4-4-2.14-2.14L4.14 4H3.27z" fill="#666666" />
+      </svg>
+    </div>
+    <h1>Vous &ecirc;tes hors ligne</h1>
+    <p>Il semble que vous n'ayez pas de connexion Internet. Certaines fonctionnalit&eacute;s peuvent &ecirc;tre limit&eacute;es.</p>
+    <div class="actions">
+      <button class="btn btn-primary" type="button" onclick="window.location.reload()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" fill="currentColor" />
+        </svg>
+        R&eacute;essayer
+      </button>
+      <button class="btn btn-secondary" type="button" onclick="history.back()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor" />
+        </svg>
+        Retour
+      </button>
+    </div>
+    <section class="cached-pages" aria-labelledby="cached-pages-heading">
+      <h2 id="cached-pages-heading">Pages disponibles hors ligne</h2>
+      <ul id="cached-pages-list">
+        <li><a href="/">Accueil</a></li>
+        <li><a href="/#services">Services</a></li>
+        <li><a href="/#projects">Projets</a></li>
+        <li><a href="/#contact">Contact</a></li>
+        <li><a href="/formation/">Formation I.A. g&eacute;n&eacute;rative</a></li>
+      </ul>
+    </section>
+  </main>
+  <script>
+    if ("caches" in window) {
+      caches.keys().then((names) => {
+        if (names.length > 0) {
+          console.log("Caches disponibles:", names);
+        }
+      }).catch(() => {});
+    }
+
+    window.addEventListener("online", () => {
+      window.location.reload();
+    });
+  </script>
+</body>
+</html>

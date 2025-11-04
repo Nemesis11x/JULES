@@ -1,0 +1,34 @@
+# Robots.txt pour Alter Agency
+# https://alteragency.studio
+
+User-agent: *
+Allow: /
+Allow: /assets/*.png
+Allow: /assets/*.jpg
+Allow: /assets/*.jpeg
+Allow: /assets/*.svg
+Allow: /assets/*.mp4
+Allow: /assets/*.webp
+Disallow: /assets/*.woff
+Disallow: /assets/*.woff2
+Crawl-delay: 1
+
+# Googlebot
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Bingbot
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Block bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+# Sitemap
+Sitemap: https://alteragency.studio/sitemap.xml

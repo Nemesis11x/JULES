@@ -1,0 +1,3130 @@
+@font-face {
+  font-family: 'Garet';
+  src: url('/assets/garet-heavy.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* === VARIABLES === */
+:root {
+  /* Couleurs principales */
+  --cyan: #17c7d2;
+  --cyan-bright: #10ddea;
+  --rose: #e20e96;
+  --rose-deep: #df0f9f;
+  --orange: #fca43e;
+  --orange-warm: #fea63c;
+  
+  /* Couleurs de thème - thème dark uniquement */
+  --bg-color: #000010; /* MODIFIED: Changed from #000010 to pure black */
+  --text-color: #ffffff;
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --overlay-bg: rgba(0, 0, 0, 0.8); /* MODIFIED: Changed from rgba(0, 0, 16, 0.8) */
+  
+  /* Typographie */
+  --font-primary: 'Garet', sans-serif;
+  --font-secondary: 'Sora', sans-serif;
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.4s ease;
+  --transition-slow: 0.6s ease;
+  
+  /* Spacing */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 2rem;
+  --space-lg: 4rem;
+  --space-xl: 8rem;
+  
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+  
+  /* Z-index */
+  --z-negative: -1;
+  --z-normal: 1;
+  --z-elevated: 10;
+  --z-sticky: 100;
+  --z-modal: 1000;
+  --z-overlay: 2000;
+  --z-max: 9999;
+}
+
+/* === BASE === */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: auto !important;
+  overflow-x: hidden; /* AJOUTÉ: Empêche le défilement horizontal */
+}
+
+body {
+  font-family: var(--font-secondary);
+  background: var(--bg-color);
+  color: var(--text-color);
+  overflow-x: hidden;
+  transition: background-color var(--transition-medium);
+  min-height: 100vh;
+  line-height: 1.5;
+  cursor: url('/assets/alter-cursor.cur'), url('/assets/alter-cursor.png'), auto;
+  position: relative; /* AJOUTÉ: Pour contenir les éléments absolus */
+}
+
+/* AJOUTÉ: Empêcher le défilement du body lorsque le menu mobile est ouvert */
+body.no-scroll {
+  overflow: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Anti “mots collés” — spacing around decorative spans without changing text */
+:where(h1, h2, h3, p, li) {
+  white-space: normal;
+  letter-spacing: normal;
+  word-spacing: normal;
+}
+
+:where(.accent, .text-gradient, .highlight, .brand, .gradient-text, .text-cyan) {
+  display: inline-block;
+  margin-inline: .18ch;
+  white-space: normal;
+}
+
+.hero-title :where(.accent, .text-gradient, .highlight, .brand, .gradient-text, .text-cyan) {
+  margin-inline: .22ch;
+}
+
+/* Conserver les optimisations will-change */
+.webgl-background,
+.hero-content,
+.hero-visual,
+.service-box,
+.project-box,
+.client-logo,
+.gradient-blob {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* === TYPOGRAPHIE === */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: var(--space-sm);
+  letter-spacing: -0.02em;
+  transition: none;
+}
+
+h1 {
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+}
+
+h2 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  position: relative;
+  cursor: pointer;
+}
+
+/* Animation du gradient */
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes stroke {
+  100% { stroke-dashoffset: 0; }
+}
+
+/* === CURSEUR PERSONNALISÉ === */
+.custom-cursor {
+  position: fixed;
+  pointer-events: none;
+  z-index: var(--z-max);
+  opacity: 0; /* Initialement caché, JS le montrera si nécessaire */
+  transition: opacity 0.3s;
+}
+
+.cursor-dot {
+  position: fixed;
+  width: 10px; /* MODIFIED from 12px */
+  height: 10px; /* MODIFIED from 12px */
+  background: linear-gradient(135deg, var(--rose), var(--rose-deep)); /* MODIFIED: Changed from cyan to rose */
+  border-radius: var(--radius-full);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s cubic-bezier(0.23, 1, 0.320, 1), 
+              height 0.3s cubic-bezier(0.23, 1, 0.320, 1),
+              background 0.3s ease;
+  z-index: var(--z-max);
+  pointer-events: none;
+  box-shadow: 0 0 20px rgba(226, 14, 150, 0.6); /* MODIFIED: Changed from cyan to rose shadow */
+}
+
+.cursor-dot.text-hover {
+  width: 20px; /* MODIFIED from 24px */
+  height: 20px; /* MODIFIED from 24px */
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
+.cursor-dot.interactive-hover {
+  width: 16px; /* MODIFIED from 20px */
+  height: 16px; /* MODIFIED from 20px */
+  background: rgba(226, 14, 150, 0.2); /* MODIFIED: Changed from cyan to rose */
+  border: 2px solid var(--rose); /* MODIFIED: Changed from cyan to rose */
+  box-shadow: 0 0 25px rgba(226, 14, 150, 0.7); /* MODIFIED: Changed from cyan to rose */
+}
+
+.cursor-dot.service-project-hover {
+  width: 16px !important; /* MODIFIED from 20px */
+  height: 16px !important; /* MODIFIED from 20px */
+  background: transparent !important;
+  border: 2px solid var(--rose) !important; /* MODIFIED: Changed from cyan to rose */
+  box-shadow: none !important;
+  opacity: 1 !important;
+}
+
+/* === NAVIGATION === */
+.main-navigation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: var(--z-sticky);
+  padding: var(--space-sm) 0;
+  transition: all var(--transition-medium);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background-color: transparent;
+}
+
+.main-navigation.scrolled {
+  padding: var(--space-xs) 0;
+  background-color: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.main-navigation.hidden {
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+
+.nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+  padding-right: 0; /* CHANGED: no right padding on desktop */
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* Desktop nav: visible on wide screens, hidden on tablets / mobile so links
+   only appear inside the slider (mobile menu). This prevents duplicate
+   clickable links next to the burger icon. */
+.nav-links.desktop-nav {
+  /* Force-hidden: don't show or allow clicks until the slider/menu explicitly opens.
+     Use the mobile slider/menu for navigation items. */
+  display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  gap: 1.2rem;
+  align-items: center;
+}
+.nav-links.desktop-nav .nav-link {
+  color: inherit;
+  text-decoration: none;
+  padding: 0.35rem 0.6rem;
+  display: inline-block;
+}
+
+/* Hide desktop nav on smaller viewports so the burger+slider is the only
+   navigation exposed on mobile. Also disable pointer events so items are
+   not accidentally clickable when visually hidden. */
+/* Show desktop navigation only on wide screens */
+/* NOTE: desktop desktop-nav intentionally kept hidden so the burger/slider
+   is the single source of navigation. If you later want desktop nav visible
+   again, remove the force-hidden rules above and re-enable this media block. */
+
+/* === BURGER MENU === */
+.burger-menu-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 26px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: calc(var(--z-sticky) + 30);
+  margin-right: 0;
+}
+
+.burger-menu-button span {
+  width: 100%;
+  height: 2px;
+  background-color: var(--text-color);
+  border-radius: var(--radius-sm);
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+/* Cacher le bouton burger lorsque le menu est actif (ouvert) */
+.burger-menu-button.active {
+  display: none;
+}
+
+/* === MOBILE MENU LATÉRAL === */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 85%;
+  max-width: 320px;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: calc(var(--z-sticky) + 20);
+  transform: translateX(100%);
+  transition: transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1); /* MODIFIÉ : durée augmentée à 0.5s */
+  /* Ensure menu contents are not visible or focusable when closed */
+  visibility: hidden;
+  pointer-events: none;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+}
+
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  z-index: calc(var(--z-sticky) + 15);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0.5s ease; /* MODIFIÉ : durée augmentée à 0.5s */
+  /* Prevent clicks when overlay is hidden */
+  pointer-events: none;
+}
+
+.mobile-menu.active {
+  transform: translateX(0);
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.mobile-menu-overlay.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Bouton de fermeture */
+.close-menu-button {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+  transition: transform var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-menu-button:hover {
+  transform: scale(1.1);
+}
+
+/* X créé en CSS */
+.close-menu-button span {
+  position: absolute;
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: #ffffff;
+  border-radius: 1px;
+  top: 50%;
+  left: 50%;
+  transition: background-color var(--transition-fast);
+}
+
+.close-menu-button span:first-child {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.close-menu-button span:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.close-menu-button:hover span {
+  background-color: var(--rose); /* MODIFIED: Changed from var(--cyan) to var(--rose) */
+}
+
+/* Contenu du menu mobile */
+.mobile-menu-content {
+  padding: var(--space-xl) var(--space-md) var(--space-md);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* ADDED: Center content vertically */
+}
+
+.mobile-menu-header {
+  margin-bottom: var(--space-xl);
+  text-align: center;
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: absolute; /* ADDED: Position absolute */
+  top: var(--space-xl); /* ADDED: Place at top */
+  left: 0; /* ADDED */
+  right: 0; /* ADDED */
+}
+
+.mobile-menu-logo {
+  width: 100px; /* MODIFIÉ: de 80px à 100px */
+  height: auto;
+}
+
+/* Navigation mobile */
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0; /* MODIFIED: Changed from var(--space-sm) to 0 for connected links */
+  flex: 0; /* MODIFIED: Changed from flex: 1 to flex: 0 */
+  padding-top: 0; /* MODIFIED: Removed top padding */
+  margin: auto 0; /* ADDED: Center vertically */
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 1.25rem var(--space-md); /* MODIFIED: Reduced from var(--space-md) to 1.25rem */
+  border-radius: 0; /* MODIFIED: Removed border radius */
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.mobile-nav-link::before {
+  /* REMOVED: Gradient background effect */
+  display: none;
+}
+
+/* ADDED: Fine white line separator */
+.mobile-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: var(--space-md);
+  right: var(--space-md);
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: background-color var(--transition-fast);
+}
+
+/* Remove line from last item */
+.mobile-nav-link:last-child::after {
+  display: none;
+}
+
+.mobile-nav-link:hover::after,
+.mobile-nav-link.active::after {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* REMOVED: .link-number styles completely */
+.link-number {
+  display: none; /* ADDED: Hide number completely */
+}
+
+.link-text {
+  font-size: 1.1rem; /* MODIFIED: Reduced from 1.25rem */
+  font-weight: 400; /* MODIFIED: Reduced from 500 for more elegance */
+  letter-spacing: 0.02em;
+  transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+.mobile-nav-link:hover .link-text {
+  transform: translateX(3px); /* MODIFIED: Reduced from 5px for subtlety */
+  color: rgba(255, 255, 255, 0.9); /* ADDED: Slight transparency on hover */
+}
+
+.mobile-nav-link.active .link-text {
+  color: var(--cyan);
+  font-weight: 500; /* ADDED: Slightly bolder when active */
+}
+
+/* === WEBGL BACKGROUND === */
+.webgl-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 0;
+  opacity: 0.4;
+  pointer-events: none;
+  /* KEEP WebGL background active */
+}
+
+.webgl-background canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* === MAIN === */
+main {
+  position: relative;
+  z-index: var(--z-normal);
+  overflow-x: hidden; /* AJOUTÉ: Empêche le débordement horizontal */
+}
+
+/* === CONTAINER PRINCIPAL === */
+#main-container {
+  position: relative;
+  overflow-x: hidden; /* AJOUTÉ: Empêche le débordement horizontal */
+  width: 100%; /* AJOUTÉ: Largeur fixe */
+}
+
+/* === SECTIONS COMMUNES === */
+section {
+  padding: var(--space-lg) var(--space-md);
+  position: relative;
+  overflow: hidden;
+}
+
+section::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background: linear-gradient(to bottom, transparent, var(--bg-color));
+  pointer-events: none;
+  z-index: 1;
+}
+
+.section-late {
+  content-visibility: auto;
+  contain-intrinsic-size: 800px;
+}
+
+/* Effet de vague entre sections */
+.wave-divider {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 100" xmlns="http://www.w3.org/2000/svg"><path d="M0,50 Q300,0 600,50 T1200,50 L1200,100 L0,100 Z" fill="%23000010"/></svg>');
+  background-size: cover;
+  opacity: 0.1;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+  position: relative;
+}
+
+.section-title {
+  margin-bottom: var(--space-sm);
+  display: inline-block;
+}
+
+/* === HERO === */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 80px;
+  overflow: visible;
+  background-color: transparent; /* MODIFIED: Keep transparent to see WebGL */
+}
+
+.hero-split {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+.hero-content {
+  flex: 0 0 55%;
+  position: relative;
+  text-align: left;
+}
+
+.hero-visual {
+  flex: 0 0 45%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 450px;
+}
+
+.hero-logo {
+  width: 120px;
+  margin-bottom: var(--space-md);
+  display: block;
+  margin-left: -18px;
+  margin-right: auto;
+  margin-top: 5px;
+}
+
+.hero-title {
+  font-family: var(--font-primary);
+  font-size: clamp(2.5rem, 8vw, 5.5rem);
+  font-weight: 800;
+  line-height: 0.9;
+  margin-bottom: var(--space-lg);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: visible; /* ADDED: Ensure text is not clipped */
+}
+
+.hero-subtitle {
+  display: block;
+  font-size: clamp(1rem, 3vw, 1.2rem);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: var(--space-sm);
+  color: var(--cyan);
+}
+
+.hero-main {
+  white-space: nowrap !important;   /* chaque span reste sur 1 ligne */
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, 
+    var(--cyan-bright),
+    var(--rose-deep),
+    var(--cyan-bright)
+  );
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  animation: gradientFlow 8s linear infinite;
+  display: inline;
+  white-space: nowrap;
+  line-height: inherit; /* ADDED: Inherit line-height from parent */
+  vertical-align: baseline; /* ADDED: Ensure proper vertical alignment */
+}
+
+/* === HERO CTA - cadre élégant et couleurs ALTER subtiles === */
+.hero-cta {
+  margin-top: 1.2rem;
+  display: flex;
+  justify-content: flex-start;
+}
+.hero-cta .btn {
+  display: inline-block;
+  padding: 0.9rem 1.6rem;
+  border-radius: 12px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), color var(--transition-fast);
+  color: var(--text-color);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.hero-cta .btn.btn-primary {
+  background: linear-gradient(90deg, rgba(16,221,234,0.06), rgba(255,47,146,0.03));
+  border: 1px solid rgba(23,199,210,0.18);
+  box-shadow: 0 8px 30px rgba(16,221,234,0.06), inset 0 1px 0 rgba(255,255,255,0.02);
+}
+.hero-cta .btn.btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, rgba(23,199,210,0.08), rgba(255,138,31,0.04), rgba(226,14,150,0.05));
+  filter: blur(8px);
+  opacity: 0.9;
+  z-index: -1;
+  pointer-events: none;
+}
+.hero-cta .btn.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 40px rgba(23,199,210,0.11);
+}
+
+/* === SECTION FORMATION INTRO === */
+.formation-intro {
+  padding: 2.4rem 0 1.6rem;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+}
+.formation-intro .formation-desc {
+  max-width: 900px;
+  margin: 0 auto 1rem;
+  color: rgba(255,255,255,0.88);
+  font-size: 1.05rem;
+}
+.formation-intro .formation-features ul {
+  display: flex;
+  gap: 1.6rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 0.8rem;
+}
+.formation-intro .formation-features li {
+  background: rgba(255,255,255,0.02);
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+}
+
+@media (max-width: 768px) {
+  .hero-cta { justify-content: center; }
+  .formation-intro .formation-features ul { gap: 0.8rem; }
+  .formation-intro .formation-features li { font-size: 0.95rem; padding: 0.5rem 0.8rem; }
+}
+
+/* Animation WebGL Hero */
+.webgl-animation-container {
+  position: relative; /* Ensure this for absolute positioning of children */
+  width: 100%;
+  max-width: 600px; /* MODIFIED: Increased from 500px to 600px */
+  margin: 2rem auto;
+  aspect-ratio: 1;
+  overflow: visible;
+  background: transparent !important;
+  box-shadow: none;
+  display: block;
+  min-height: 600px; /* MODIFIED: Increased from 500px to 600px */
+}
+
+#canvas3d {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important; /* JS will manage display none/block */
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  background: transparent !important; /* MODIFIED: Force transparent background */
+}
+
+/* ADDED: Force Spline canvas to be transparent */
+spline-viewer {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  background: transparent !important;
+}
+
+/* ADDED: Target all canvases inside the container to ensure transparency */
+.webgl-animation-container canvas {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* === À PROPOS === */
+.about {
+  padding: var(--space-xl) var(--space-md);
+  background-color: transparent; /* MODIFIED: Changed from rgba(0, 0, 0, 0.5) to transparent */
+}
+
+.about-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: var(--space-lg);
+}
+
+.about-text {
+  flex: 0 0 100%;
+  margin: 0 auto;
+  text-align: center;
+  max-width: 900px;
+}
+
+.about-paragraph {
+  font-size: 1.35rem; 
+  line-height: 1.7;
+  margin-bottom: 2rem; 
+  letter-spacing: 0.01em; 
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative; 
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.about-visual {
+  flex: 0 0 45%;
+  position: relative;
+  height: 400px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.text-cyan {
+  color: var(--cyan);
+  font-weight: 700;
+  font-size: 1.35rem;
+  display: inline-block; 
+  position: relative; 
+  transform: translateY(0); 
+  text-shadow: 0 0 10px rgba(23, 199, 210, 0.35);
+}
+
+/* === SECTION TRANSITION INTERACTIVE === */
+.interactive-transition {
+  position: relative;
+  padding: 0;
+  height: 450px;
+  overflow: hidden;
+  margin-bottom: var(--space-md);
+  margin-top: -80px; /* ADDED: Negative margin to move up */
+  background: transparent;
+}
+
+.interactive-container {
+  position: relative; /* Changed from absolute to relative if it's the direct parent for video/canvas */
+  /* Or keep absolute if .interactive-transition is the positioning parent */
+  /* Assuming .interactive-transition is the positioning parent: */
+  /* position: absolute; */
+  /* top: 0; */
+  /* left: 0; */
+  width: 100%;
+  height: 100%;
+}
+
+#about-canvas {
+  width: 100%;
+  height: 100%;
+  display: block !important; /* JS will manage display none/block */
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  background: transparent !important;
+}
+
+/* ADDED: Video styles */
+.hero-video-mobile,
+.about-video-mobile {
+  display: none; /* Initially hidden, JS will show them on mobile */
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  position: absolute; 
+  top: 0;
+  left: 0;
+  border-radius: inherit; /* Inherit border-radius from parent if any */
+}
+
+/* ADDED: Video fallback styles */
+.video-fallback-img {
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: inherit;
+}
+
+/* Show fallback when video fails */
+.hero-video-mobile.fallback-active,
+.about-video-mobile.fallback-active {
+  display: none !important;
+}
+
+.video-fallback-img.fallback-active {
+  display: block !important;
+}
+
+/* Ensure containers for videos/canvases have relative positioning if not already */
+/* .webgl-animation-container and .interactive-container should already be set up */
+
+/* Specific mobile adjustments for hero video container if needed */
+/* Styles are defined in other media queries, see lines 1582-1596 for mobile styles */
+
+/* === SERVICES === */
+.services {
+  padding: var(--space-xl) var(--space-md);
+  background: transparent; /* MODIFIED: Changed from rgba(0, 0, 0, 0.5) to transparent */
+  position: relative;
+}
+
+.service-grid {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.service-box {
+  width: 280px;
+  min-height: 480px;
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease,
+              border-color 0.3s ease,
+              background-color 0.3s ease,
+              backdrop-filter 0.3s ease;
+  cursor: inherit;
+  opacity: 0; /* KEEP THIS */
+  visibility: hidden; /* KEEP THIS */
+  contain: layout style paint;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.03) 0%, 
+    rgba(255, 255, 255, 0.01) 100%);
+}
+
+/* MODIFIÉ: Lueur spécifique pour chaque service box au hover */
+.service-box:nth-child(1):hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25), 
+              0 0 25px rgba(23, 199, 210, 0.15),
+              inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-color: rgba(23, 199, 210, 0.4);
+  background-color: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+}
+
+.service-box:nth-child(2):hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25), 
+              0 0 25px rgba(226, 14, 150, 0.15),
+              inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-color: rgba(226, 14, 150, 0.4);
+  background-color: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+}
+
+.service-box:nth-child(3):hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25), 
+              0 0 25px rgba(252, 164, 62, 0.15),
+              inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-color: rgba(252, 164, 62, 0.4);
+  background-color: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+}
+
+
+
+.service-content {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+  background: radial-gradient(ellipse at center, 
+    rgba(0, 0, 16, 0.1) 0%, 
+    transparent 70%);
+}
+
+/* Remplacer la règle existante .service-content::before */
+.service-content::before {
+  content: '' !important; /* ADDED: Ensure content is always present */
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  opacity: 0.15; /* MODIFIED: Changed from 0 to 0.15 - Always visible on desktop */
+  filter: blur(50px);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+/* Activation du halo au hover sur desktop */
+.service-box:hover .service-content::before {
+  opacity: 0.25; /* MODIFIED: Increased from 0.15 to 0.25 for better hover effect */
+}
+
+/* Force visibility on mobile and touch devices */
+@media (max-width: 768px), (hover: none) {
+  .service-box .service-content::before {
+    /* content: '' !important; */ /* Redondant, déjà dans .service-content::before */
+    opacity: 0.15 !important;
+    visibility: visible !important;
+    display: block !important;
+    transition: none !important;
+  }
+  
+  /* Ensure icon container is above the halo */
+  .icon-container {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+/* Couleurs spécifiques pour chaque service */
+.service-box:nth-child(1) .service-content::before {
+  background: radial-gradient(circle at center, rgba(23, 199, 210, 0.8), transparent 70%); /* MODIFIED: Increased opacity from 0.15 to 0.8 */
+}
+
+.service-box:nth-child(2) .service-content::before {
+  background: radial-gradient(circle at center, rgba(226, 14, 150, 0.8), transparent 70%); /* MODIFIED: Increased opacity from 0.15 to 0.8 */
+}
+
+.service-box:nth-child(3) .service-content::before {
+  background: radial-gradient(circle at center, rgba(252, 164, 62, 0.8), transparent 70%); /* MODIFIED: Increased opacity from 0.15 to 0.8 */
+}
+
+.icon-container {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+  overflow: hidden;
+  z-index: 2; /* ADDED: Ensure icons are above the halo */
+}
+
+.icon-mono,
+.icon-color {
+  max-width: 170px;
+  height: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity var(--transition-fast);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1)); /* AJOUTÉ: ombre douce */
+}
+
+.icon-mono {
+  opacity: 1;
+}
+
+.icon-color {
+  opacity: 0;
+}
+
+
+
+.service-name {
+  text-align: center;
+  margin-bottom: 10px;
+  font-family: var(--font-secondary);
+  font-size: 1.06rem;
+  font-weight: 600;
+  transition: color var(--transition-medium);
+  position: relative; /* AJOUTÉ: pour la ligne décorative */
+}
+
+/* AJOUTÉ: Ligne décorative sous le titre au hover */
+.service-name::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 50px;
+  height: 2px;
+  border-radius: 1px;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.service-box:hover .service-name::after {
+  transform: translateX(-50%) scaleX(1);
+  opacity: 0.6;
+}
+
+/* Couleurs spécifiques pour chaque ligne */
+.service-box:nth-child(1) .service-name::after {
+  background: linear-gradient(90deg, rgba(23, 199, 210, 0), rgba(23, 199, 210, 0.8), rgba(23, 199, 210, 0));
+}
+
+.service-box:nth-child(2) .service-name::after {
+  background: linear-gradient(90deg, rgba(226, 14, 150, 0), rgba(226, 14, 150, 0.8), rgba(226, 14, 150, 0));
+}
+
+.service-box:nth-child(3) .service-name::after {
+  background: linear-gradient(90deg, rgba(252, 164, 62, 0), rgba(252, 164, 62, 0.8), rgba(252, 164, 62, 0));
+}
+
+/* SUPPRIMÉ: .service-box:nth-child(4) .service-name::after */
+
+.service-description {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease,
+              max-height 0.3s ease,
+              margin-top 0.3s ease,
+              transform 0.3s ease;
+  margin-top: 0;
+}
+
+.service-description p {
+  text-align: center;
+  margin: 0 auto;
+  max-width: 85%;
+  font-size: 1rem; /* MODIFIED: Increased from 0.95rem to 1rem */
+  line-height: 1.6; /* MODIFIED: Increased from 1.5 to 1.6 for better readability */
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  color: rgba(255, 255, 255, 0.85); /* AJOUTÉ: Légèrement transparent comme sur mobile */
+}
+
+/* Correction pour l'icône web plus grande */
+.service-box:nth-child(3) .icon-mono,
+.service-box:nth-child(3) .icon-color {
+  max-width: 230px;
+}
+
+/* AJOUTÉ: Indicateur visuel discret en bas */
+.service-box::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  opacity: 0.8; /* This ensures the bottom glow is visible by default on mobile */
+  transition: opacity 0.3s ease;
+}
+
+/* Couleurs spécifiques pour chaque indicateur */
+.service-box:nth-child(1)::after {
+  background: linear-gradient(90deg, transparent, rgba(23, 199, 210, 0.6), transparent); /* MODIFIÉ: de var(--rose) à var(--cyan) */
+}
+
+.service-box:nth-child(2)::after {
+  background: linear-gradient(90deg, transparent, rgba(226, 14, 150, 0.6), transparent); /* MODIFIÉ: de var(--cyan) à var(--rose) */
+}
+
+.service-box:nth-child(3)::after {
+  background: linear-gradient(90deg, transparent, rgba(252, 164, 62, 0.6), transparent);
+}
+
+/* === PROJETS === */
+.projects {
+  padding: var(--space-xl) var(--space-md);
+  background-color: transparent; /* MODIFIED: Changed from rgba(0, 0, 0, 0.5) to transparent */
+}
+
+.projects-grid {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.project-box {
+  position: relative;
+  width: 320px;
+  height: 320px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  cursor: inherit;
+  transition: box-shadow var(--transition-medium);
+  flex-shrink: 0;
+  opacity: 0; /* KEEP THIS */
+  visibility: hidden; /* KEEP THIS */
+  contain: layout style paint;
+  border: none !important;
+}
+
+.project-box:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.project-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* hover garde l’échelle 1, les anciennes lignes !important répétées sont retirées */
+.project-box:hover .project-img { transform: none; }
+
+.project-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: var(--space-md);
+  padding-bottom: var(--space-xs); /* Réduits à var(--space-xs) pour faire descendre le texte */
+  background: linear-gradient(to top, rgba(0, 0, 16, 0.9), transparent);
+  transform: translateY(10px);
+  opacity: 0;
+  transition: transform var(--transition-medium), opacity var(--transition-medium);
+}
+
+.project-box:hover .project-overlay {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.project-title {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-xs);
+  color: var(--text-color);
+  margin-top: 0.5rem; /* Ajouté pour descendre très légèrement le titre */
+}
+
+.project-description {
+  font-size: 1.05rem; /* Augmenté de 0.9rem à 1.05rem */
+  opacity: 0.8;
+  line-height: 1.4; /* Ajout d'un line-height pour améliorer la lisibilité */
+}
+
+/* === CONFIANCE === */
+.trusted-by {
+  padding: var(--space-lg) var(--space-md);
+  background-color: transparent; /* MODIFIED: Changed from rgba(0, 0, 0, 0.5) to transparent */
+}
+
+.trusted-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-md) 0;
+}
+
+.client-logo {
+  height: 100px;
+  width: auto;
+  filter: grayscale(100%) brightness(1.2);
+  opacity: 0; /* KEEP THIS */
+  visibility: hidden; /* KEEP THIS */
+  transform: translateY(80px) scale(0.92);
+  will-change: transform, opacity, filter;
+  transform-origin: center;
+  backface-visibility: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+/* === CONTACT === */
+.contact {
+  padding: var(--space-xl) var(--space-md);
+  position: relative;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.5); /* KEEP: Keep semi-transparent black for contact form */
+}
+
+.contact-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.gradient-blob {
+  position: absolute;
+  width: 230px;
+  height: 240px;
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: 0;
+  opacity: 0.85;
+  pointer-events: none;
+  will-change: transform;
+  animation: blobBreathe 6s ease-in-out infinite, blobRotate 20s linear infinite;
+}
+
+/* Animation de respiration pour les blobs */
+@keyframes blobBreathe {
+  0%, 100% {
+    transform: scale(1) translateZ(0);
+  }
+  50% {
+    transform: scale(1.15) translateZ(0);
+  }
+}
+
+/* Animation de rotation pour les blobs */
+@keyframes blobRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 
+Effet désiré :
+- Les trois blobs utilisent les trois couleurs (cyan, rose, orange) dans le même ordre et avec une dominance similaire.
+- Le rendu doit ressembler à un dégradé linéaire diagonal comme l'image fournie.
+- Seule la direction et la position changent légèrement pour chaque blob.
+*/
+
+/* Blob 1 : dégradé linéaire diagonal haut-gauche vers bas-droit, cyan plus visible */
+.blob-1 {
+  top: 150px;
+  left: -100px;
+  background: linear-gradient(135deg,
+    var(--cyan-bright) 10%,
+    var(--rose) 50%,
+    var(--orange) 90%);
+  animation: blobBreathe 3s ease-in-out infinite, 
+            blobRotate 20s linear infinite,
+            pulse 5s infinite ease-in-out;
+  /* animation-delay: 0s, 0s, 0s; a été retiré car 0s est la valeur par défaut */
+}
+
+/* Blob 2 : dégradé linéaire diagonal bas-gauche vers haut-droit, cyan plus visible */
+.blob-2 {
+  bottom: -100px;
+  right: -100px;
+  background: linear-gradient(225deg,
+    var(--cyan-bright) 10%,
+    var(--rose) 50%,
+    var(--orange) 90%);
+  animation: blobBreathe 3s ease-in-out infinite, 
+            blobRotate 25s linear infinite reverse,
+            pulse 5s infinite ease-in-out;
+  /* animation-delay: 0s, 0s, 0s; a été retiré */
+}
+
+/* Blob 3 : dégradé linéaire diagonal gauche vers droite, cyan plus visible */
+.blob-3 {
+  top: 40px;
+  right: 10%;
+  background: linear-gradient(60deg,
+    var(--cyan-bright) 10%,
+    var(--rose) 50%,
+    var(--orange) 90%);
+  animation: blobBreathe 3s ease-in-out infinite, 
+            blobRotate 30s linear infinite,
+            pulse 5s infinite ease-in-out;
+  /* animation-delay: 0s, 0s, 0s; a été retiré */
+  transform-origin: center;
+}
+
+.contact-title {
+  font-size: clamp(2.5rem, 6vw, 3.5rem);
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+  text-align: center;
+  display: inline-block;
+}
+
+.contact-subtitle {
+  text-align: center;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  margin-bottom: var(--space-lg);
+  opacity: 0.8;
+}
+
+.contact-box {
+  background-color: var(--card-bg);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  contain: layout style paint; /* Ajouté */
+}
+
+.info-column {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: var(--space-lg);
+  width: 35%;
+  position: relative;
+  overflow: hidden;
+}
+
+.info-column h2 {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-lg);
+  position: relative;
+  display: inline-block;
+}
+
+.info-column h2::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -10px;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--cyan), var(--rose), var(--orange));
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.contact-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Suppression du background et du border-radius */
+  background-color: transparent;
+  border-radius: 0;
+  /* Ajustement des dimensions */
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin-right: var(--space-xs);
+  transition: transform var(--transition-fast);
+}
+
+/* .info-item:hover .contact-icon - Règle supprimée car vide */
+
+.contact-icon img {
+  /* Augmenter légèrement la taille des icônes pour qu'elles soient plus visibles */
+  width: 22px;
+  height: 22px;
+}
+
+.hover-effect {
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.hover-effect::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px; /* MODIFIED from 1px */
+  background: linear-gradient(90deg, var(--cyan), var(--rose), var(--orange)); /* MODIFIÉ to match h2 underline */
+  transition: width var(--transition-medium);
+}
+
+.hover-effect:hover::after {
+  width: 100%;
+}
+
+.form-column {
+  padding: var(--space-lg);
+  width: 65%;
+  position: relative;
+}
+
+.form-row {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.form-group {
+  flex: 1;
+  position: relative;
+}
+
+.contact label {
+  display: block;
+  margin-bottom: var(--space-xs);
+  font-weight: 500;
+  transition: color var(--transition-fast);
+  cursor: inherit; /* ADDED */
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--space-sm);
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid transparent; /* Bordure transparente par défaut pour éviter le décalage */
+  border-radius: var(--radius-md);
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease; /* Transition plus lente pour plus de subtilité */
+}
+
+.form-input:focus {
+  border-color: rgba(23, 199, 210, 0.6); /* Bordure cyan semi-transparente */
+  box-shadow: 0 0 0 1px rgba(23, 199, 210, 0.15); /* Ombre très subtile */
+  outline: none;
+}
+
+textarea.form-input {
+  height: 150px;
+  resize: vertical;
+}
+
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+}
+
+.radio-item {
+  position: relative;
+}
+
+.radio-item input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.radio-item label {
+  cursor: pointer;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all var(--transition-medium);
+}
+
+/* bloc :hover unique, ancien doublon retiré */
+.radio-item label:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0,0,0,.2);
+}
+
+.radio-item input[type="radio"]:checked + label {
+  background: linear-gradient(125deg, 
+    rgba(23, 199, 210, 1) 0%, 
+    rgba(226, 14, 150, 0.9) 55%, 
+    rgba(252, 164, 62, 1) 100%);
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 2px 8px rgba(226, 14, 150, 0.2); 
+  background-origin: border-box;
+  background-clip: border-box;
+}
+
+.form-submit {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-md);
+}
+
+.submit-button {
+  position: relative;
+  padding: 0.875rem 1.75rem;
+  background: linear-gradient(125deg, 
+    rgba(23, 199, 210, 1) 0%, 
+    rgba(226, 14, 150, 0.95) 50%, 
+    rgba(252, 164, 62, 1) 100%);
+  box-shadow: none;
+  background-size: 200% auto;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Transition plus fluide avec courbe de Bézier */
+  min-height: 48px;
+  border: none; /* ADDED: Remove default border */
+  border-radius: var(--radius-full); /* ADDED: Make button rounded like radio buttons */
+  cursor: pointer; /* ADDED: Ensure pointer cursor */
+}
+
+.submit-button:hover {
+  background-position: right center;
+  background-size: 200% auto;
+  box-shadow: 0 8px 20px rgba(226, 14, 150, 0.25);
+  transform: scale(1.05);
+}
+
+/* Masquer l'icône flèche */
+.button-icon {
+  display: none;
+}
+
+.submit-button.loading {
+  color: transparent;
+}
+
+.submit-button.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: var(--radius-full);
+  animation: spin 0.8s linear infinite;
+}
+
+.confirmation-message {
+  position: fixed; /* MODIFIED from absolute */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--overlay-bg);
+  backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-medium), visibility var(--transition-medium); /* MODIFIED: Only transition opacity and visibility */
+  z-index: var(--z-modal); /* MODIFIED: Use a standard modal z-index */
+  border-radius: 0; /* MODIFIED: Remove border-radius for full screen */
+}
+
+.confirmation-message.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.confirmation-content {
+  text-align: center;
+  padding: var(--space-lg);
+  background: rgba(0, 0, 16, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(10px);
+  max-width: 90%;
+  width: 400px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.check-circle {
+  width: 80px;
+  height: 80px;
+  background: rgba(5, 5, 35, 0.6);
+  border-radius: var(--radius-full);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.checkmark {
+  width: 56px;
+  height: 56px;
+}
+
+.checkmark-circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 3;
+  stroke: var(--cyan);
+  fill: none;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark-check {
+  stroke: white;
+  stroke-width: 3;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+.back-button {
+  padding: var(--space-sm) var(--space-lg);
+  background: linear-gradient(90deg, var(--cyan) 0%, var(--rose) 50%, var(--orange) 100%);
+  background-size: 200% auto;
+  background-position: left center;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  cursor: inherit; /* CHANGED from cursor: pointer */
+  transition: all var(--transition-medium);
+}
+
+.back-button:hover {
+  background-position: right center;
+  transform: scale(1.05); /* Remplacé translateY(-3px) par scale(1.05) */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-lg);
+}
+
+.logo-container img {
+  width: 180px; /* MODIFIÉ: de 150px à 180px */
+  height: auto;
+  opacity: 1;
+  transition: none;
+  pointer-events: none;
+}
+
+/* Suppression de l' effet hover */
+/* .logo-container img:hover {
+  opacity: 1;
+} */
+
+.footer-note {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  margin-top: var(--space-md);
+}
+
+/* === PRÉCHARGEUR === */
+.preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000000; /* Keep pure black for preloader */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: var(--z-overlay);
+  transition: opacity var(--transition-medium), visibility var(--transition-medium);
+  contain: strict;
+}
+
+.preloader.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.preloader-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* ADDED: Basic styles for the preloader logo */
+.logo-animation img {
+  width: 150px; /* Adjust as needed for desktop/tablet */
+  height: auto;
+  display: block; /* Ensures it behaves as a block element */
+  margin: 0 auto; /* Centers the logo if preloader-content is flex container */
+}
+
+/* ADDED: Loading bar styles */
+.loading-bar-container {
+  width: 200px;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.loading-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, 
+    var(--cyan) 0%, 
+    var(--rose) 50%, 
+    var(--orange) 100%);
+  background-size: 200% 100%;
+  border-radius: 2px;
+  transition: none; /* MODIFIED: Removed transition for smoother JS animation */
+  animation: gradientFlow 3s linear infinite;
+  box-shadow: 0 0 10px rgba(23, 199, 210, 0.5);
+  will-change: width; /* ADDED: Optimize for animation */
+}
+
+/* ADDED: Loading percentage text */
+.loading-percentage {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: var(--font-secondary);
+  letter-spacing: 0.1em;
+  min-width: 3ch; /* ADDED: Prevent layout shift */
+  display: inline-block; /* ADDED: For min-width to work */
+}
+
+/* === PRELOADER MOBILE === */
+@media (max-width: 768px) {
+  .logo-animation img {
+    width: 120px; /* MODIFIÉ: de 100px à 120px */
+  }
+  
+  .loading-bar-container {
+    width: 160px; /* ADDED: Smaller on mobile */
+  }
+  
+  .loading-percentage {
+    font-size: 0.8rem; /* ADDED: Smaller text on mobile */
+  }
+}
+
+/* === RETOUR EN HAUT === */
+.back-to-top {
+  position: fixed;
+  bottom: var(--space-md);
+  right: var(--space-md);
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-full);
+  background: var(--card-bg);
+  backdrop-filter: blur(8px);
+  border: none; /* Suppression de la bordure */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: inherit;
+  z-index: var(--z-sticky);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all var(--transition-medium);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--rose) 50%, var(--orange) 100%);
+  background-origin: border-box;
+  background-clip: border-box;
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 10px 20px rgba(226, 14, 150, 0.25),
+              0 0 15px rgba(23, 199, 210, 0.2); /* Ombres réduites */
+}
+
+.arrow-up {
+  font-size: 1.5rem;
+  color: var(--text-color);
+  transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+.back-to-top:hover .arrow-up {
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Effet de pulsation au hover */
+.back-to-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: inherit;
+  filter: blur(15px);
+  opacity: 0;
+  transition: opacity var(--transition-medium);
+  z-index: -1;
+}
+
+.back-to-top:hover::before {
+  opacity: 0.7;
+}
+
+/* === ACCESSIBILITY FOCUS STYLES === */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--cyan, #17c7d2);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(23, 199, 210, 0.3);
+}
+
+/* ADDED: Remove focus styles for radio buttons on mobile */
+@media (max-width: 768px), (hover: none) {
+  .radio-item input[type="radio"]:focus-visible + label {
+    outline: none;
+    box-shadow: none;
+  }
+  
+  .radio-item label:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+  
+  /* Remove tap highlight on mobile */
+  .radio-item label {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  /* ADDED: Prevent scroll jump on radio button focus */
+  .radio-item input[type="radio"]:focus {
+    outline: none;
+  }
+  
+  /* ADDED: Prevent any scroll behavior on radio interactions */
+  .form-group.sujet-group {
+    scroll-behavior: auto;
+    overscroll-behavior: contain;
+  }
+  
+  /* ADDED: Fix for input fields to prevent scroll issues */
+  .form-input:focus {
+    scroll-behavior: auto;
+  }
+}
+
+/* === MAGIC TEXT CURSOR EFFECT === */
+.magic-text-area {
+  position: relative;
+  display: inline-block;
+}
+
+.magic-text-cursor-element {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 35px;  /* Réduit de 40px à 35px */
+  height: 35px; /* Réduit de 40px à 35px */
+  border-radius: 50%;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  background-color: #fff;
+  z-index: 2;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  will-change: transform, opacity, left, top;
+}
+
+.magic-text-area > h1,
+.magic-text-area > h2,
+.magic-text-area > h3 {
+  position: relative;
+  z-index: 1;
+  user-select: none;
+  cursor: inherit;
+}
+
+.cursor-dot,
+.magic-text-cursor-element,
+.cursor-trail-particle {
+  contain: layout style paint;
+  will-change: transform, opacity;
+}
+
+.magic-text-area {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* =============================================== */
+/* === OPTIMISATIONS MOBILE - NE TOUCHE PAS AU DESKTOP === */
+/* === Désactivation des effets inutiles sur mobile === */
+@media (max-width: 768px), (hover: none) {
+  /* Désactive toutes les animations/transitions coûteuses */
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  /* ADDED: Exception pour le menu mobile - autoriser les transitions */
+  .mobile-menu,
+  .mobile-menu-overlay {
+    transition: transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
+  }
+  
+  .mobile-menu-overlay {
+    transition: opacity 0.5s ease, visibility 0.5s ease !important;
+  }
+
+  /* ADDED: Re-enable transitions and animations for confirmation message and checkmark */
+  .confirmation-message {
+    transition: opacity var(--transition-medium), visibility var(--transition-medium) !important;
+  }
+
+  .checkmark-circle {
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards !important;
+  }
+
+  .checkmark-check {
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards !important;
+  }
+  
+  .gradient-text {
+    animation: gradientFlow 8s linear infinite !important;
+    transition: none !important; /* Garde la transition désactivée si besoin */
+  }
+}
+
+/* === NAVIGATION MOBILE === */
+@media (max-width: 768px) {
+  .main-navigation {
+    padding: 0.75rem 0;
+    background-color: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  
+  .main-navigation.scrolled {
+    background-color: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .nav-container {
+    padding: 0 1rem;
+    padding-right: 1rem; /* IMPORTANT: Garde le padding normal sur mobile */
+    justify-content: flex-end;
+    align-items: center;
+    height: 32px;
+  }
+  
+  .burger-menu-button {
+    margin-right: 0;
+  }
+}
+
+/* === HERO MOBILE === */
+@media (max-width: 768px) {
+  .hero {
+    min-height: 100vh;
+    padding-top: 0;
+    padding-bottom: 0; /* MODIFIED: Removed all bottom padding */
+  }
+  
+  .hero-split {
+    padding: 0 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+    margin-top: -100px;
+  }
+  
+  .hero-content {
+    flex: 1 1 auto;
+    text-align: left;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 0;
+  }
+  
+  .hero-visual {
+    flex: 0 0 auto;
+    min-height: auto;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 0;
+  }
+  
+  .hero-logo {
+    width: 95px;
+    margin-bottom: 0.5rem;
+    margin-left: -15px !important;
+    margin-right: auto;
+  }
+  
+  .hero-title {
+    font-size: clamp(2.5rem, 6vw, 3.5rem);
+    line-height: 0.95;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+    text-align: left;
+    width: 100%;
+  }
+  
+  .gradient-text {
+    font-size: inherit;
+  }
+  
+  .hero-main {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+  
+  .webgl-animation-container {
+    max-width: 320px; /* MODIFIED: Increased from 260px to 320px */
+    margin: 0 auto;
+    margin-bottom: -3rem !important;
+    transform: none;
+    min-height: 320px; /* ADDED: Match min-height with max-width */
+    height: 320px; /* ADDED: Fixed height for consistency */
+  }
+  
+  /* ADDED: Ensure Spline canvas fills container on mobile */
+  #canvas3d {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+  }
+}
+
+/* Mobile L (414px) - Samsung Galaxy S20/S21/S22/S23, iPhone 12 Pro Max, etc. */
+@media (max-width: 414px) {
+  .hero-title {
+    font-size: 2.25rem;
+  }
+  
+  .hero-title .hero-main {
+    font-size: 1em; /* Use full size of parent */
+  }
+  
+  /* ADDED: Slightly larger animation for bigger phones */
+  .webgl-animation-container {
+    max-width: 340px;
+    height: 340px;
+    min-height: 340px;
+  }
+  
+  /* ADDED: Larger about video for bigger mobile screens */
+  .interactive-transition {
+    height: 340px; /* ADDED: Larger height for bigger mobile screens */
+  }
+}
+
+/* Mobile M (375px) - iPhone 12/13/14, Samsung Galaxy S10, etc. */
+@media (max-width: 375px) {
+  .hero-title {
+    font-size: 2.1rem; /* Slightly smaller than 414px */
+  }
+  
+  .hero-title .hero-main {
+    font-size: 1em; /* Keep full size relative to parent */
+  }
+  
+  /* ADDED: Keep animation size proportional */
+  .webgl-animation-container {
+    max-width: 300px;
+    height: 300px;
+    min-height: 300px;
+  }
+  
+  /* ADDED: Proportional about video size */
+  .interactive-transition {
+    height: 300px; /* ADDED: Proportional to device size */
+  }
+}
+
+/* Mobile S (360px) - Older Samsung Galaxy devices */
+@media (max-width: 360px) {
+  .hero {
+    padding-top: 0;
+  }
+  
+  .hero-split {
+    margin-top: -120px;
+    align-items: flex-start;
+  }
+  
+  .hero-content {
+    margin-top: 0;
+    text-align: left;
+    align-items: flex-start;
+  }
+  
+  .hero-title {
+    font-size: 2rem; /* Smaller for 360px screens */
+    text-align: left;
+    line-height: 0.95;
+  }
+  
+  .hero-title .hero-main {
+    font-size: 1em; /* Keep full size relative to parent */
+  }
+  
+  .hero-logo {
+    margin-left: 0;
+  }
+  
+  .hero-main {
+    margin-bottom: 0;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+  
+  .webgl-animation-container {
+    max-width: 280px; /* MODIFIED: Increased from 260px to 280px */
+    margin-bottom: -3.5rem !important;
+    transform: none;
+    height: 280px; /* ADDED: Fixed height */
+    min-height: 280px; /* ADDED: Match min-height */
+  }
+  
+  /* ADDED: Optimize Spline canvas for mobile */
+  #about-canvas {
+    max-width: 100%;
+    max-height: 100%;
+  }
+}
+
+/* Mobile XS (320px) - Very small devices */
+@media (max-width: 320px) {
+  /* ADDED: Smallest size for very small screens */
+  .webgl-animation-container {
+    max-width: 260px;
+    height: 260px;
+    min-height: 260px;
+    margin-bottom: -3rem !important;
+  }
+  
+  /* ADDED: Smallest about video size */
+  .interactive-transition {
+    height: 260px; /* ADDED: Smallest size for very small screens */
+  }
+}
+
+/* === À PROPOS === */
+@media (max-width: 768px) {
+  .about {
+    padding: 0.5rem 1rem 3rem 1rem !important; /* MODIFIED: Further reduced top padding to 0.5rem with !important */
+  }
+  
+  .about-paragraph {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+  
+  .text-cyan {
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+  
+  .interactive-transition {
+    height: 320px; /* MODIFIED: Increased from 220px to 320px */
+    margin-bottom: 1rem;
+    margin-top: -20px; /* MODIFIED: Changed from -30px to make it less negative */
+  }
+  
+  /* ADDED: Optimize Spline canvas for mobile */
+  #about-canvas {
+    max-width: 100%;
+    max-height: 100%;
+  }
+}
+
+/* === SERVICES MOBILE - TAP TO REVEAL === */
+@media (max-width: 768px) {
+  .services {
+    padding: 3rem 1rem;
+  }
+  
+  .section-header {
+    margin-bottom: 2.5rem;
+  }
+  
+  .section-title {
+    font-size: clamp(1.5rem, 6vw, 2rem);
+  }
+  
+  .service-grid {
+    gap: 2rem; /* MODIFIÉ: Augmenté de 1.5rem à 2rem */
+    padding: 0;
+  }
+  
+  .service-box {
+    width: 100%;
+    max-width: 400px;
+    min-height: auto;
+    margin: 0 auto;
+    position: relative;
+    cursor: default;
+    /* MODIFIED: Use solid background color to exactly match PC hover's glassmorphism */
+    background-color: rgba(255, 255, 255, 0.03); 
+    /* The previous linear-gradient was:
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.03) 0%, 
+      rgba(255, 255, 255, 0.01) 100%); */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Base border, overridden by specific nth-child rules below */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25), /* Default to cyan glow, overridden by nth-child */
+                0 0 25px rgba(23, 199, 210, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    /* MODIFIED: Removed background-color from transition as it should be static on mobile */
+    transition: box-shadow 0.3s ease;                        /* IDENTIQUE PC : pas de transition sur transform */
+  }
+  
+  /* AJOUTÉ: Bordures colorées toujours visibles sur mobile */
+  .service-box:nth-child(1) {
+    border-color: rgba(23, 199, 210, 0.4); /* Cyan pour Conception graphique */
+  }
+  
+  .service-box:nth-child(2) {
+    border-color: rgba(226, 14, 150, 0.4); /* Rose pour Community Management */
+  }
+  
+  .service-box:nth-child(3) {
+    border-color: rgba(252, 164, 62, 0.4); /* Orange pour Création de site Web */
+  }
+  
+  /* SUPPRIMÉ: Effet de profondeur au toucher */
+  /* .service-box:active {
+    transform: scale(0.98);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  } */
+  
+  .service-content {
+    padding: 2rem 1.5rem; /* MODIFIÉ: Augmenté le padding */
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* AJOUTÉ: Effet de halo coloré derrière l'icône */
+  .service-content::before {
+    content: '' !important;
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    opacity: 0.15 !important; /* MODIFIED: Force visibility on mobile */
+    filter: blur(50px);
+    pointer-events: none;
+    transition: none !important; /* Remove transition on mobile */
+    z-index: 0;
+  }
+  
+  /* Couleurs spécifiques pour chaque service */
+  .service-box:nth-child(1) .service-content::before {
+    background: radial-gradient(circle at center, rgba(23, 199, 210, 0.8), transparent 70%) !important;
+  }
+  
+  .service-box:nth-child(2) .service-content::before {
+    background: radial-gradient(circle at center, rgba(226, 14, 150, 0.8), transparent 70%) !important;
+  }
+  
+  .service-box:nth-child(3) .service-content::before {
+    background: radial-gradient(circle at center, rgba(252, 164, 62, 0.8), transparent 70%) !important;
+  }
+  
+  .icon-container {
+    height: 130px; /* MODIFIÉ: Augmenté de 120px */
+    margin-bottom: 1.5rem;
+    position: relative;
+                                                                                                                         z-index: 1;
+  }
+  
+  .icon-mono,
+  .icon-color {
+    max-width: 130px; /* MODIFIÉ: Augmenté de 120px */
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  }
+  
+  /* MODIFIÉ: Icônes colorées affichées par défaut sur mobile */
+  .service-box .icon-mono {
+    opacity: 0;
+  }
+  
+  .service-box .icon-color {
+       opacity: 1;
+    /* REMOVED: Animation de flottement */
+    /* animation: floatIcon 4s ease-in-out infinite; */
+  }
+  
+  /* REMOVED: Animation floatIcon
+  @keyframes floatIcon {
+    0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+    50% { transform: translate(-50%, -50%) translateY(-5px); }
+  }
+  */
+  
+  .service-box:nth-child(3) .icon-mono,
+  .service-box:nth-child(3) .icon-color {
+    max-width: 170px; /* MODIFIÉ: Augmenté de 160px */
+  }
+  
+  .service-name {
+    font-size: 1.2rem; /* MODIFIÉ: Augmenté de 1.1rem */
+    margin-bottom: 0.75rem; /* MODIFIÉ: Augmenté de 0.5rem */
+    font-weight: 700; /* AJOUTÉ: Plus gras */
+    letter-spacing: -0.01em; /* AJOUTÉ: Espacement serré */
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* AJOUTÉ: Ligne décorative sous le titre */
+  .service-name::after {
+   
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 2px;
+    border-radius: 1px;
+    opacity: 0.6;
+  }
+  
+  /* Couleurs spécifiques pour chaque ligne */
+  .service-box:nth-child(1) .service-name::after {
+    background: linear-gradient(90deg, rgba(23, 199, 210, 0), rgba(23, 199, 210, 0.8), rgba(23, 199, 210, 0));
+  }
+  
+  .service-box:nth-child(2) .service-name::after {
+    background: linear-gradient(90deg, rgba(226, 14, 150, 0), rgba(226,  14, 150, 0.8), rgba(226, 14, 150, 0));
+  }
+  
+   
+  .service-box:nth-child(3) .service-name::after {
+       background: linear-gradient(90deg, rgba(252, 164, 62, 0), rgba(252, 164, 62, 0.8), rgba(252, 164, 62, 0));
+  }
+  
+  /* MODIFIÉ: Description visible par défaut on mobile */
+  .service-box .service-description {
+    opacity: 1;
+    max-height: 200px;
+    transform: translateY(0);
+    margin-top: 1.5rem; /* MODIFIÉ: Augmenté de 1rem */
+    position: relative;
+    z-index: 1;
+  }
+  
+  .service-box .service-description p {
+    opacity: 1;
+    transform: translateY(0);
+    font-size: 1rem; /* MODIFIED: Increased from 0.95rem to 1rem */
+    line-height: 1.6; /* MODIFIED: Increased from 1.5 to 1.6 for better readability */
+    color: rgba(255, 255, 255, 0.85); /* AJOUTÉ: Légèrement transparent */
+  }
+}
+
+/* AJOUTÉ: Amélioration pour petits écrans */
+@media (max-width: 360px) {
+  .service-box {
+    max-width: 320px;
+  }
+  
+  .service-content {
+    padding: 1.5rem 1.25rem;
+  }
+  
+  .icon-container {
+    height: 110px;
+  }
+  
+  .icon-mono,
+  .icon-color {
+    max-width: 110px;
+  }
+  
+  .service-box:nth-child(3) .icon-mono,
+  .service-box:nth-child(3) .icon-color {
+    max-width: 140px;
+  }
+  
+  .service-name {
+    font-size: 1.1rem;
+  }
+  
+  .service-description p {
+    font-size: 0.95rem; /* MODIFIED: Slightly smaller for very small screens but still larger than before */
+    max-width: 100%;          /* ou 95 %, selon votre marge interne */
+    /* éventuellement : overflow-wrap:anywhere; pour casser les mots très
+       longs, mais ici ce n'est pas indispensable */
+  }
+}
+
+/* === PROJETS MOBILE - TAP TO REVEAL === */
+@media (max-width: 768px) {
+  .projects {
+    padding: 3rem 1rem;
+  }
+  
+
+  
+  .projects-grid {
+    gap: 1.5rem;
+  }
+  
+  .project-box {
+    width: 100%;
+    max-width: 400px;
+    height: 300px;
+    margin: 0 auto;
+    position: relative;
+  }
+  
+ 
+  
+  /* MODIFIÉ: Retirer complètement le zoom et la transition sur l'image */
+  .project-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: none !important; /* MODIFIÉ: Ajout de !important */
+    transform: scale(1) !important; /* MODIFIÉ: Ajout de !important */
+  }
+  
+  /* AJOUTÉ: S'assurer que le hover ne fonctionne pas sur mobile */
+  .project-box:hover .project-img {
+    transform: scale(1) !important;
+  }
+  
+  /* MODIFIÉ: Overlay toujours visible sur mobile */
+  .project-overlay {
+    transform: translateY(0);
+    opacity:  1; /* MODIFIÉ: visible par défaut */
+    background: linear-gradient(to top, rgba(0, 0, 16, 0.95), transparent);
+    pointer-events: auto; /* MODIFIÉ: interactions activées */
+  }
+  
+  .project-title {
+    font-size: 1.3rem;
+  }
+  
+  .project-description {
+    font-size: 0.85rem;
+  }
+}
+
+/* === CLIENTS MOBILE === */
+@media (max-width: 768px) {
+  .trusted-by {
+    padding: 3rem 1rem;
+  }
+  
+  .trusted-grid {
+    display: grid;
+    grid-template-columns: repeat(2, auto); /* Les colonnes s'adaptent au contenu */
+    justify-content: center; /* Centre la grille des logos horizontalement */
+    align-items: center; /* Centre les logos verticalement dans leur rangée */
+    gap:  1.8rem; /* MODIFIÉ: Augmenté de var(--space-md) (1.5rem) à 1.8rem */
+    padding: 1.5rem 0; /* Conserve le padding vertical */
+  }
+  
+  .client-logo {
+    height:  70px; /* MODIFIÉ: Augmenté de 60px à 65px */
+
+    justify-self: center; /* Centre le logo dans sa cellule de grille (bon pour la cohérence) */
+    filter: none; /* Remove grayscale for mobile */
+    transition: filter 0.3s ease;
+   }
+  
+  .client-logo:active {
+    filter: grayscale(0%) brightness(1);
+  }
+}
+
+/* === CONTACT MOBILE === */
+@media (max-width: 768px) {
+  .contact {
+    padding: 3rem 1rem;
+  }
+  
+  /* Blobs plus petits sur mobile */
+  .gradient-blob {
+    width: 180px;
+    height: 200px;
+    filter: blur(60px);
+    animation: none !important; /* ADDED: Disable all animations on mobile */
+  }
+  
+  .blob-1 {
+    top: 70px;
+    left: -90px;
+    animation: none !important; /* ADDED: Disable animations */
+  }
+  
+  .blob-2 {
+    width: 150px;
+    height: 160px;
+    left: 50%;
+    right: auto;
+    bottom: -20px;
+    transform: translateX(-50%);
+    animation: none !important; /* ADDED: Disable animations */
+  }
+  
+  .blob-3 {
+    display: none;
+  }
+  
+  .contact-title {
+    font-size: clamp(2rem, 4vw, 2.5rem);
+  }
+  
+  .contact-subtitle {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .contact-box {
+    flex-direction: column;
+  }
+  
+  .info-column,
+  .form-column {
+    width: 100%;
+    padding: 1.5rem;
+  }
+  
+  .info-column {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+  
+  .info-column h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .contact-info {
+    gap: 1.2rem;
+    margin-top: 1.5rem;
+  }
+  
+  .info-item {
+    font-size: 0.9rem;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .form-input {
+    padding: 0.75rem;
+    font-size: 16px; /* Évite le zoom sur iOS */
+    /* Touch target minimum 44px */
+    min-height: 44px;
+  }
+  
+  /* Radio buttons plus grands pour mobile */
+  .radio-item label {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .form-submit {
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+  
+  .submit-button {
+    width: 100%;
+    padding: 0.875rem 1.75rem; /* Juste milieu pour mobile */
+    font-size: 1.1rem; /* Réduit légèrement de 1.15rem */
+    justify-content: center;
+    min-height: 48px; /* Garde une hauteur confortable pour le toucher */
+  }
+  
+  .confirmation-content {
+    padding: 2rem 1.5rem;
+    width: 90%;
+  }
+  
+  .check-circle {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .checkmark {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .back-button {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .logo-container img {
+    width: 140px; /* MODIFIÉ: de 120px à 140px */
+  }
+  
+  .footer-note {
+    font-size: 0.8rem;
+  }
+}
+
+/* === BACK TO TOP MOBILE === */
+@media (max-width: 768px) {
+  .back-to-top {
+    bottom: 1rem;
+    right: 1rem;
+    width: 44px;
+    height: 44px;
+    /* ADDED: Re-enable transitions for smooth color changes */
+    transition: all var(--transition-medium) !important;
+  }
+  
+  /* MODIFIED: Keep default state without hover */
+  .back-to-top:hover {
+    background: var(--card-bg);
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* MODIFIED: Use :active for tap with smooth transition */
+  .back-to-top:active {
+    background: linear-gradient(135deg, var(--cyan) 0%, var(--rose) 50%, var(--orange) 100%);
+    transform: translateY(-2px) scale(0.95);
+    box-shadow: 0 6px 15px rgba(226, 14, 150, 0.2),
+                0 0 10px rgba(23, 199, 210, 0.15);
+    transition: all 0.2s ease !important; /* Smooth transition on tap */
+  }
+  
+  /* ADDED: Arrow transition */
+  .arrow-up {
+    font-size: 1.2rem;
+    transition: color var(--transition-fast) !important;
+  }
+  
+  .back-to-top:hover .arrow-up {
+    color: var(--text-color);
+    transform: none;
+  }
+  
+  /* MODIFIED: Smooth color transition for arrow */
+  .back-to-top:active .arrow-up {
+    color: white;
+    transition: color 0.2s ease !important;
+  }
+  
+  /* Remove hover effect pulse */
+  .back-to-top::before {
+    display: none;
+  }
+}
+
+/* MODIFIED: Touch devices - enable smooth transitions */
+@media (hover: none) {
+  .back-to-top {
+    /* ADDED: Enable transitions on touch devices */
+    transition: all var(--transition-medium) !important;
+  }
+  
+  .back-to-top:hover {
+    background: var(--card-bg);
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .back-to-top:active {
+    background: linear-gradient(135deg, var(--cyan) 0%, var(--rose) 50%, var(--orange) 100%);
+    transform: translateY(-2px) scale(0.95);
+    transition: all 0.2s ease !important;
+  }
+  
+  .back-to-top .arrow-up {
+    transition: color var(--transition-fast) !important;
+  }
+}
+
+/* MODIFIED: Override the global mobile no-transition rule for back-to-top */
+@media (max-width: 768px), (hover: none) {
+  .back-to-top,
+  .back-to-top * {
+    /* Re-enable transitions specifically for back-to-top button */
+    transition: all var(--transition-medium) !important;
+  }
+  
+  .back-to-top .arrow-up {
+    transition: color var(--transition-fast) !important;
+  }
+}
+
+/* Réactive l'animation du gradient sur le mot créativité sur mobile */
+@media (max-width: 768px), (hover: none) {
+  .gradient-text {
+    animation: gradientFlow 8s linear infinite !important;
+    transition: none !important; /* Garde la transition désactivée si besoin */
+  }
+}
+
+/* ADDED: Specific tablet adjustments for about video */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .interactive-transition {
+    height: 420px; /* MODIFIED: Increased from 400px to 420px */
+  }
+  
+  .about-video-mobile {
+    object-fit: contain !important;
+    object-position: center !important;
+    max-width: 90% !important; /* MODIFIED: Increased from 85% to 90% */
+    max-height: 90% !important; /* MODIFIED: Increased from 85% to 90% */
+    margin: auto !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+  }
+}
+
+/* MODIFIED: Tablet landscape specific adjustments - slightly increased */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  .hero {
+    min-height: 90vh !important; /* MODIFIED: Slightly reduced height */
+    padding-top: 60px !important;
+  }
+  
+  .hero-split {
+    padding: 0 2rem !important; /* MODIFIED: Increased horizontal padding */
+  }
+  
+  .hero-content {
+    flex: 0 0 65% !important; /* MODIFIED: More space for text in landscape */
+  }
+  
+  .hero-visual {
+    flex: 0 0 35% !important; /* MODIFIED: Less space for visual in landscape */
+    min-height: 280px !important; /* MODIFIED: Reduced height for landscape */
+  }
+  
+  .webgl-animation-container {
+    max-width: 280px !important; /* MODIFIED: Smaller in landscape */
+    min-height: 280px !important;
+    height: 280px !important;
+  }
+  
+  .hero-title {
+    font-size: clamp(2rem, 4.5vw, 2.8rem) !important; /* MODIFIED: Smaller in landscape */
+  }
+}
+
+/* Tablet portrait spécifique - FORCE la disposition horizontale */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .hero {
+    min-height: 80vh !important; /* MODIFIED: Reduced from 100vh to 80vh */
+    padding-top: 40px !important; /* MODIFIED: Reduced from 80px to 40px */
+    padding-bottom: 2rem !important; /* ADDED: Reduce bottom spacing */
+    justify-content: flex-start !important; /* ADDED: Align to top instead of center */
+  }
+  
+  .hero-split {
+    padding: 2rem 1.5rem 0 1.5rem !important; /* MODIFIED: Added top padding, removed bottom */
+    flex-direction: row !important; /* ADDED: FORCE row layout even in portrait */
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    margin-top: 2rem !important; /* ADDED: Bring content closer to top */
+  }
+  
+  .hero-content {
+    flex: 0 0 58% !important; /* MODIFIED: Balanced for portrait */
+    width: auto !important; /* ADDED: Override mobile styles */
+    text-align: left !important;
+    order: 1 !important;
+  }
+  
+  .hero-visual {
+    flex: 0 0 42% !important; /* MODIFIED: Balanced for portrait */
+    min-height: 300px !important; /* MODIFIED: Reduced from 320px to 300px */
+    width: auto !important; /* ADDED: Override mobile styles */
+    order: 2 !important;
+    margin-top: 0 !important; /* ADDED: Reset mobile margin */
+  }
+  
+  .webgl-animation-container {
+    max-width: 300px !important; /* MODIFIED: Reduced from 320px to 300px */
+    min-height: 300px !important; /* MODIFIED: Reduced from 320px to 300px */
+    height: 300px !important; /* MODIFIED: Reduced from 320px to 300px */
+    margin-bottom: 0 !important; /* ADDED: Reset mobile negative margin */
+  }
+  
+  .hero-title {
+    font-size: clamp(2.1rem, 4.8vw, 2.8rem) !important; /* MODIFIED: Slightly reduced size */
+    margin-bottom: 0.5rem !important; /* ADDED: Reset mobile margin */
+  }
+}
+
+/* ADDED: Reduce spacing between hero and about on tablet portrait */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .about {
+    padding-top: 1rem !important; /* MODIFIED: Further reduced from 2rem to 1rem */
+    margin-top: -3rem !important; /* MODIFIED: Increased negative margin from -1rem to -3rem */
+  }
+  
+  .interactive-transition {
+    margin-top: -4rem !important; /* MODIFIED: Increased negative margin from -2rem to -4rem */
+    margin-bottom: 0.5rem !important; /* MODIFIED: Further reduced from 1rem to 0.5rem */
+    height: 380px !important; /* MODIFIED: Slightly reduced height from 420px to 380px */
+  }
+  
+  /* ADDED: Reduce hero bottom spacing specifically */
+  .hero {
+    min-height: 75vh !important; /* MODIFIED: Further reduced from 80vh to 75vh */
+    padding-bottom: 1rem !important; /* MODIFIED: Reduced from 2rem to 1rem */
+  }
+  
+  .hero-split {
+    padding-bottom: 0 !important; /* ADDED: Remove any bottom padding */
+    margin-bottom: 0 !important; /* ADDED: Remove any bottom margin */
+  }
+  
+  .hero-visual {
+    margin-bottom: 0 !important; /* ADDED: Remove any bottom margin */
+  }
+  
+  .webgl-animation-container {
+    margin-bottom: -1rem !important; /* ADDED: Negative margin to bring closer to about */
+  }
+}
+
+/* ADDED: Ensure proper spacing for the entire portrait tablet experience */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  /* Reduce overall page spacing */
+  section {
+    padding: 2.5rem var(--space-md) !important; /* MODIFIED: Further reduced from 3rem to 2.5rem */
+  }
+  
+  .section-header {
+    margin-bottom: 1.5rem !important; /* MODIFIED: Further reduced from 2rem to 1.5rem */
+  }
+  
+  /* ADDED: Reduce about section title spacing */
+  .about .section-header {
+    margin-bottom: 1rem !important; /* MODIFIED: Even less spacing for about title */
+  }
+  
+  /* ADDED: Reduce about text spacing */
+  .about-paragraph {
+    margin-bottom: 1rem !important; /* MODIFIED: Reduced spacing between paragraphs */
+  }
+  
+  .about-paragraph:last-child {
+    margin-bottom: 0 !important; /* ADDED: No margin on last paragraph */
+  }
+}
+
+/* === LAZY LOADING STYLES === */
+.lazy-load {
+  background-color: rgba(255, 255, 255, 0.03);
+  filter: blur(5px);
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.lazy-loaded {
+  filter: blur(0);
+  animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0.8;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.lazy-error {
+  filter: grayscale(100%);
+  opacity: 0.5;
+  position: relative;
+}
+
+.lazy-error::after {
+  content: '⚠';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Skeleton loading pour les images */
+.project-img.lazy-load,
+.client-logo.lazy-load {
+  position: relative;
+  overflow: hidden;
+}
+
+.project-img.lazy-load::before,
+.client-logo.lazy-load::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Optimisation pour la performance */
+.lazy-load,
+.lazy-loaded {
+  will-change: filter, opacity;
+  contain: layout style paint;
+}
+
+/* Désactiver les animations pour les préférences réduites */
+@media (prefers-reduced-motion: reduce) {
+  .lazy-load,
+  .lazy-loaded {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .lazy-load::before {
+    animation: none !important;
+  }
+}
+
+/* === ANTI-COLLAGE STYLES === */
+/* Prévenir les mots collés sans modifier le texte */
+:where(h1, h2, h3, p, li) {
+  white-space: normal;
+  letter-spacing: normal;
+  word-spacing: normal;
+  line-height: 1.5;
+}
+
+:where(.accent, .text-gradient, .highlight, .brand, .gradient-text, .text-cyan) {
+  display: inline-block;
+  margin-inline: 0.18ch;
+  white-space: normal;
+}
+
+.hero-title :where(.accent, .text-gradient, .highlight, .brand, .gradient-text, .text-cyan) {
+  margin-inline: 0.22ch;
+}
+
+/* Forcer l'encodage UTF-8 pour éviter les mojibakés */
+html {
+  -webkit-locale: 'fr';
+}
+
+/* Assurer l'espacement correct des spans inline */
+.hero-main {
+  display: inline-block;
+  margin-right: 0.25ch;
+}
+
+.hero-main:last-child {
+  margin-right: 0;
+}
+
+/* === PERFORMANCE: CONTENT-VISIBILITY === */
+/* Améliore le rendu des sections hors écran */
+.services,
+.projects,
+.trusted-by,
+.contact,
+.formation-intro {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+/* Sections volumineuses */
+.section-late {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
+/* Contact section (très volumineuse) */
+.contact {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
