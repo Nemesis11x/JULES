@@ -56,8 +56,8 @@
   <link rel="preload" href="/assets/garet-heavy.woff2" as="font" type="font/woff2" crossorigin>
   <!-- Performance: Logo preload removed due to size (858KB with embedded base64) -->
   <link rel="preload" href="/assets/cube.png" as="image" type="image/png" fetchpriority="high">
-  <link rel="preload" href="/style.css?v=8" as="style">
-  <link rel="stylesheet" href="/style.css?v=8" media="all">
+  <link rel="preload" href="/style.css?v=9" as="style">
+  <link rel="stylesheet" href="/style.css?v=9" media="all">
   <noscript>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@100;300;400;600;700;800&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
@@ -385,7 +385,13 @@
 <span class=hero-main>votre marque.</span>
 </h1>
 <div class="cta-group hero-cta">
-<a class="btn btn-primary" href=/formation/ aria-label="Découvrir nos formations">Découvrir nos formations</a>
+<a class="btn btn-primary cta-formation" href="/formation/" aria-label="Découvrir nos formations">
+              <span class="dark-core"></span>
+              <span class="galactic-ring"></span>
+              <span class="particle-container"></span>
+              <span class="grain-overlay"></span>
+              <span class="button-text">Découvrir nos formations</span>
+            </a>
 </div>
 </div>
 <div class=hero-visual>
@@ -401,6 +407,15 @@
 </div>
 </section>
 <section class=about id=about>
+<div class="cta-formation-mobile">
+<a class="btn btn-primary cta-formation" href="/formation/" aria-label="Découvrir nos formations">
+  <span class="dark-core"></span>
+  <span class="galactic-ring"></span>
+  <span class="particle-container"></span>
+  <span class="grain-overlay"></span>
+  <span class="button-text">Découvrir nos formations</span>
+</a>
+</div>
 <div class=section-header>
 <h2 class=section-title>Qui sommes-nous ?</h2>
 <div class=section-line>
@@ -922,7 +937,7 @@
 <script type="module" src="https://unpkg.com/@splinetool/runtime@1.9.28/build/runtime.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.9.6/lottie.min.js" defer></script>
 <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js" defer></script>
-<script type="module" src="/script.js?v=1" defer></script>
+<script type="module" src="/script.js?v=2" defer></script>
 </body>
 </html>
 

@@ -96,11 +96,13 @@ document.addEventListener('DOMContentLoaded', function() {
         img.src = img.dataset.src;
       }
     });
+    initMobileCtaPlacement();
   }
   
   if (!isTouch) {
     initCustomCursor();
     initMagicTextEffect();
+    initHeroCtaInteractions();
   }
 });
 
@@ -866,6 +868,42 @@ function initCustomCursor() {
       });
     });
   });
+}
+
+function initHeroCtaInteractions() {
+  const cta = document.querySelector('.hero-cta .btn.btn-primary');
+  if (!cta) return;
+  const factor = 0.04;
+  cta.addEventListener('mousemove', (e) => {
+    const rect = cta.getBoundingClientRect();
+    const mx = ((e.clientX - rect.left) / rect.width) * 100;
+    const my = ((e.clientY - rect.top) / rect.height) * 100;
+    cta.style.setProperty('--mx', mx + '%');
+    cta.style.setProperty('--my', my + '%');
+    const dx = e.clientX - (rect.left + rect.width / 2);
+    const dy = e.clientY - (rect.top + rect.height / 2);
+    const max = 6;
+    const tx = Math.max(-max, Math.min(max, dx * factor));
+    const ty = Math.max(-max, Math.min(max, dy * factor));
+    cta.style.setProperty('--tx', tx + 'px');
+    cta.style.setProperty('--ty', ty + 'px');
+  });
+  cta.addEventListener('mouseleave', () => {
+    cta.style.setProperty('--mx', '50%');
+    cta.style.setProperty('--my', '50%');
+    cta.style.setProperty('--tx', '0px');
+    cta.style.setProperty('--ty', '0px');
+  });
+}
+
+function initMobileCtaPlacement() {
+  try {
+    const videoContainer = document.querySelector('.webgl-animation-container');
+    const ctaGroup = document.querySelector('.hero-cta');
+    if (videoContainer && ctaGroup && !videoContainer.contains(ctaGroup)) {
+      videoContainer.appendChild(ctaGroup);
+    }
+  } catch (_) {}
 }
 
 // === ANIMATIONS SCROLL AVEC GSAP ===
@@ -2750,3 +2788,320 @@ if ('serviceWorker' in navigator) {
     if (window.caches && caches.keys) { caches.keys().then(keys => keys.forEach(k => caches.delete(k))).catch(() => {}); }
   });
 }
+
+// === CHROME CUBERTO SMOOTH BUTTON SYSTEM === //
+class ChromeCubertoButton {
+  constructor(button) {
+    this.button = button;
+    this.particleContainer = button.querySelector('.particle-container');
+    this.darkCore = button.querySelector('.dark-core');
+    this.galacticRing = button.querySelector('.galactic-ring');
+    
+    // Configuration
+    this.config = {
+      particles: parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cta-particles')) || 36,
+      minSize: 1,
+      maxSize: 3,
+      lifeTime: 420,
+      proximityThreshold: 32,
+      magnetStrength: 0.15
+    };
+    
+    // État
+    this.isHovering = false;
+    this.rafId = null;
+    this.particles = [];
+    this.mousePosition = { x: 0, y: 0 };
+    this.buttonRect = null;
+    
+    // Initialisation
+    this.init();
+  }
+  
+  init() {
+    // Micro-respiration aléatoire
+    this.startBreathing();
+    
+    // Événements souris
+    this.button.addEventListener('mouseenter', this.handleMouseEnter.bind(this));
+    this.button.addEventListener('mouseleave', this.handleMouseLeave.bind(this));
+    this.button.addEventListener('mousedown', this.handleMouseDown.bind(this));
+    this.button.addEventListener('mouseup', this.handleMouseUp.bind(this));
+    
+    // Événements tactiles
+    this.button.addEventListener('touchstart', this.handleTouchStart.bind(this));
+    this.button.addEventListener('touchend', this.handleTouchEnd.bind(this));
+    
+    // Événements clavier
+    this.button.addEventListener('keydown', this.handleKeyDown.bind(this));
+    this.button.addEventListener('keyup', this.handleKeyUp.bind(this));
+    
+    // Proximité magnétique
+    if (!isMobile) {
+      document.addEventListener('mousemove', this.handleProximity.bind(this));
+    }
+    
+    // Reduced motion check
+    this.respectReducedMotion();
+  }
+  
+  startBreathing() {
+    // Ajouter une variation aléatoire à la période de respiration
+    const jitter = 0.8 + Math.random() * 0.4; // ±20%
+    const period = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cta-breathe-period')) || 4.8;
+    this.button.style.animationDuration = `${period * jitter}s`;
+  }
+  
+  handleMouseEnter(e) {
+    if (this.isHovering) return;
+    this.isHovering = true;
+    this.buttonRect = this.button.getBoundingClientRect();
+    
+    // Créer les particules
+    this.createParticles();
+    
+    // Activer le noyau sombre
+    if (this.darkCore) {
+      this.darkCore.style.transition = 'all 280ms cubic-bezier(0.22, 0.61, 0.36, 1)';
+      setTimeout(() => {
+        this.darkCore.style.width = '60px';
+        this.darkCore.style.height = '60px';
+        this.darkCore.style.opacity = '0.6';
+      }, 10);
+    }
+    
+    // Activer l'anneau galactique
+    if (this.galacticRing) {
+      this.galacticRing.style.animation = `ctaRingExpand var(--cta-ring-duration) cubic-bezier(0.19, 1, 0.22, 1) forwards`;
+    }
+  }
+  
+  handleMouseLeave(e) {
+    this.isHovering = false;
+    
+    // Réinitialiser le noyau sombre
+    if (this.darkCore) {
+      this.darkCore.style.width = '0';
+      this.darkCore.style.height = '0';
+      this.darkCore.style.opacity = '0';
+    }
+    
+    // Réinitialiser l'anneau galactique
+    if (this.galacticRing) {
+      this.galacticRing.style.animation = 'none';
+      this.galacticRing.style.transform = 'translate(-50%, -50%) scale(0)';
+      this.galacticRing.style.opacity = '0';
+    }
+    
+    // Nettoyer les particules
+    this.clearParticles();
+    this.button.classList.remove('proximity-hover');
+  }
+  
+  handleMouseDown(e) {
+    this.button.style.transform = 'scale(0.98)';
+    
+    // Créer des micro-étincelles
+    this.createSparkles(5, e.offsetX, e.offsetY);
+  }
+  
+  handleMouseUp(e) {
+    this.button.style.transform = '';
+  }
+  
+  handleTouchStart(e) {
+    this.handleMouseEnter(e);
+    this.handleMouseDown(e);
+  }
+  
+  handleTouchEnd(e) {
+    this.handleMouseUp(e);
+    this.handleMouseLeave(e);
+  }
+  
+  handleKeyDown(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      this.handleMouseEnter(e);
+      this.handleMouseDown(e);
+    }
+  }
+  
+  handleKeyUp(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      this.handleMouseUp(e);
+      setTimeout(() => this.handleMouseLeave(e), 100);
+    }
+  }
+  
+  handleProximity(e) {
+    if (!this.button || this.isHovering) return;
+    
+    const rect = this.button.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    const distance = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+    
+    // Aimantation progressive
+    if (distance < this.config.proximityThreshold + rect.width / 2) {
+      this.button.classList.add('proximity-hover');
+      
+      // Micro-déplacement magnétique
+      const pullX = (e.clientX - centerX) * this.config.magnetStrength;
+      const pullY = (e.clientY - centerY) * this.config.magnetStrength;
+      
+      this.button.style.setProperty('--mx', `${50 + pullX}%`);
+      this.button.style.setProperty('--my', `${50 + pullY}%`);
+    } else {
+      this.button.classList.remove('proximity-hover');
+      this.button.style.setProperty('--mx', '50%');
+      this.button.style.setProperty('--my', '50%');
+    }
+  }
+  
+  createParticles() {
+    if (!this.particleContainer) return;
+    
+    const rect = this.button.getBoundingClientRect();
+    const particleCount = Math.min(this.config.particles, isMobile ? 20 : 36);
+    
+    for (let i = 0; i < particleCount; i++) {
+      setTimeout(() => {
+        if (!this.isHovering) return;
+        
+        const particle = document.createElement('span');
+        particle.className = 'cta-particle';
+        
+        // Position initiale au centre
+        const startX = rect.width / 2;
+        const startY = rect.height / 2;
+        particle.style.left = `${startX}px`;
+        particle.style.top = `${startY}px`;
+        
+        // Variables visuelles de l'étoile
+        const rot = Math.floor(Math.random() * 180);
+        const len = 10 + Math.random() * 10;      // 10–20px
+        const thick = 0.8 + Math.random() * 0.8;  // 0.8–1.6px
+        const palette = ['rgba(255,255,255,0.85)','rgba(23,199,210,0.75)','rgba(226,14,150,0.75)','rgba(252,164,62,0.75)'];
+        const glow = Math.random() > 0.65 ? palette[1 + Math.floor(Math.random() * 3)] : palette[0];
+
+        particle.style.setProperty('--rot', `${rot}deg`);
+        particle.style.setProperty('--len', `${len}px`);
+        particle.style.setProperty('--thick', `${thick}px`);
+        particle.style.setProperty('--glow', glow);
+
+        // Direction aléatoire
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = 30 + Math.random() * 70; // 30–100px
+        const endX = startX + Math.cos(angle) * velocity;
+        const endY = startY + Math.sin(angle) * velocity;
+        
+        this.particleContainer.appendChild(particle);
+        
+        // Animation
+        particle.animate([
+          { 
+            transform: 'translate(-50%, -50%) scale(1)',
+            opacity: 1,
+            filter: 'blur(0px)'
+          },
+          { 
+            transform: `translate(${endX - startX}px, ${endY - startY}px) scale(0.25)`,
+            opacity: 0,
+            filter: 'blur(1.6px)'
+          }
+        ], {
+          duration: this.config.lifeTime + Math.random() * 200,
+          easing: 'cubic-bezier(0.19, 1, 0.22, 1)',
+          fill: 'forwards'
+        }).onfinish = () => particle.remove();
+        
+      }, i * 8); // Décalage progressif
+    }
+  }
+  
+  createSparkles(count, x, y) {
+    if (!this.particleContainer) return;
+    
+    for (let i = 0; i < count; i++) {
+      const sparkle = document.createElement('span');
+      sparkle.className = 'cta-particle';
+      sparkle.style.width = '2px';
+      sparkle.style.height = '2px';
+      sparkle.style.left = `${x}px`;
+      sparkle.style.top = `${y}px`;
+      sparkle.style.setProperty('--glow', 'rgba(255,255,255,0.95)');
+      sparkle.style.setProperty('--len', `${8 + Math.random()*6}px`);
+      sparkle.style.setProperty('--thick', `${0.8 + Math.random()*0.6}px`);
+      sparkle.style.setProperty('--rot', `${Math.floor(Math.random()*180)}deg`);
+      
+      this.particleContainer.appendChild(sparkle);
+      
+      const angle = (Math.PI * 2 / count) * i;
+      const distance = 20 + Math.random() * 10;
+      
+      sparkle.animate([
+        { 
+          transform: 'translate(-50%, -50%) scale(1)',
+          opacity: 1
+        },
+        { 
+          transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`,
+          opacity: 0
+        }
+      ], {
+        duration: 300,
+        easing: 'ease-out',
+        fill: 'forwards'
+      }).onfinish = () => sparkle.remove();
+    }
+  }
+  
+  clearParticles() {
+    if (this.particleContainer) {
+      // Fade out existantes
+      const particles = this.particleContainer.querySelectorAll('.cta-particle');
+      particles.forEach(p => {
+        p.style.transition = 'opacity 200ms ease';
+        p.style.opacity = '0';
+        setTimeout(() => p.remove(), 200);
+      });
+    }
+  }
+  
+  respectReducedMotion() {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    
+    if (prefersReducedMotion) {
+      // Désactiver les animations complexes
+      this.config.particles = 0;
+      this.button.style.animation = 'none';
+      
+      if (this.darkCore) this.darkCore.style.display = 'none';
+      if (this.galacticRing) this.galacticRing.style.display = 'none';
+    }
+  }
+  
+  destroy() {
+    // Nettoyer tous les écouteurs
+    this.button.removeEventListener('mouseenter', this.handleMouseEnter);
+    this.button.removeEventListener('mouseleave', this.handleMouseLeave);
+    this.button.removeEventListener('mousedown', this.handleMouseDown);
+    this.button.removeEventListener('mouseup', this.handleMouseUp);
+    this.button.removeEventListener('touchstart', this.handleTouchStart);
+    this.button.removeEventListener('touchend', this.handleTouchEnd);
+    this.button.removeEventListener('keydown', this.handleKeyDown);
+    this.button.removeEventListener('keyup', this.handleKeyUp);
+    document.removeEventListener('mousemove', this.handleProximity);
+    
+    this.clearParticles();
+  }
+}
+
+// Initialisation des boutons Chrome Cuberto
+document.addEventListener('DOMContentLoaded', function() {
+  const ctaButtons = document.querySelectorAll('.btn.cta-formation');
+  ctaButtons.forEach(button => {
+    new ChromeCubertoButton(button);
+  });
+});
